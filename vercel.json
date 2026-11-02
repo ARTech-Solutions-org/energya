@@ -1,0 +1,20 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "buildCommand": "pnpm --dir artifacts/energya-photobooth build",
+  "outputDirectory": "artifacts/energya-photobooth/dist/public",
+  "rewrites": [
+    {
+      "source": "/api/r2/test",
+      "destination": "/api/r2-test"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

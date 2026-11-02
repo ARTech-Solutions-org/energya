@@ -1,0 +1,10 @@
+{
+  "viewport": "1080x1920",
+  "arabicSelectors": [],
+  "englishOnly": true,
+  "printed": true,
+  "qrHasSvg": true,
+  "adminOpen": true,
+  "errorText": "!\nONE MOMENT\nCamera unavailable\nBack to start",
+  "flow": "screensaver -> idle -> countdown -> capture-flash -> review -> retake -> print -> qr"
+}

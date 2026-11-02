@@ -1,0 +1,33 @@
+{
+  "camera": {
+    "deviceId": "",
+    "width": 1080,
+    "height": 1920
+  },
+  "countdownSeconds": 3,
+  "idleTimeoutSeconds": 45,
+  "paperSize": "4x6",
+  "printEnabled": true,
+  "soundEnabled": true,
+  "storageMode": "both",
+  "mirrorPhoto": false,
+  "baseUrl": "",
+  "r2": {
+    "accountId": "",
+    "bucket": "energya",
+    "accessKeyId": "",
+    "secretAccessKey": "",
+    "endpoint": "",
+    "publicUrl": ""
+  },
+  "local": {
+    "host": "",
+    "port": 3000,
+    "wifiSsid": "Energya-Photobooth",
+    "wifiPassword": ""
+  },
+  "languageOrder": [
+    "en"
+  ],
+  "qrMode": "both"
+}

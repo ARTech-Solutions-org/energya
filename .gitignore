@@ -1,0 +1,43 @@
+# ========================================================
+# Git Ignore Configuration for Energya Photobooth
+# ========================================================
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Standalone Desktop Build & Heavy Binaries (100MB+)
+build/
+build.zip
+
+# Build Output
+artifacts/energya-photobooth/dist/
+dist/
+*.tsbuildinfo
+
+# Verification & Test Screenshots
+verification/screenshots/
+
+# Captured Guest Photos & Local Storage
+photos/
+captures/
+
+# Scratch & Temporary Testing Screenshots
+snap_*.png
+idle_camera_*.png
+scratch_*.html
+*.log
+
+# Secrets & Environment Variables (NEVER COMMIT)
+.env
+.env.local
+.env.*.local
+*.pem
+
+# Vercel & Editor Files
+.vercel/
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store
+Desktop.ini

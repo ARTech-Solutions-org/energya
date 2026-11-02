@@ -1,0 +1,9 @@
+{
+  "livePreviewMirrored": true,
+  "shortLogoPressDoesNotOpen": true,
+  "longLogoPressOpensAdmin": true,
+  "savedPhotoNotMirrored": true,
+  "qrAutoResetsToIdle": true,
+  "serverDownShowsRecovery": true,
+  "printPageIs4x6ZeroMargin": true
+}
