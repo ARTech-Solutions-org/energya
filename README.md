@@ -9,7 +9,27 @@ An English-only kiosk flow for Energya Industries: logo screensaver, live camera
 - `server/server.mjs` — local photo storage and mobile download page
 - `start.bat` — Windows build, readiness wait, and Chrome kiosk launcher
 
-## Run locally
+## Deploy on Vercel
+
+This repository is ready to deploy on **Vercel** with full Cloudflare R2 integration:
+
+1. Push this repository to GitHub or GitLab:
+   ```bash
+   git remote add origin https://github.com/<your-username>/<your-repo>.git
+   git branch -M main
+   git push -u origin main
+   ```
+2. In your Vercel Dashboard, import the repository.
+3. In **Project Settings -> Environment Variables**, add the variables from `.env.example`:
+   - `R2_ACCOUNT_ID`
+   - `R2_BUCKET`
+   - `R2_ACCESS_KEY_ID`
+   - `R2_SECRET_ACCESS_KEY`
+   - `R2_ENDPOINT` (optional, auto-computed from account ID)
+   - `STORAGE_MODE` (`r2` or `both`)
+4. Deploy! Vercel will automatically build the Vite app and set up the serverless `/api/photos` and `/api/config` endpoints.
+
+## Run locally (Kiosk PC)
 
 ```bash
 pnpm install
