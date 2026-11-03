@@ -3,6 +3,7 @@ import { QRCodeSVG } from 'qrcode.react';
 
 const SCREEN_FRAME = '/new_design/PHOTOBOOTH-FRAME-NEW-OLD.png'; // 1080x1920 for kiosk screen
 const PRINT_FRAME = '/new_design/energya_4x6_1200x1800.png';    // 1200x1800 for 4x6 print paper & QR
+const SCREENSAVER_BG = '/new_design/screensaver_bg.jpg';         // Exhibition kiosk background
 const LOGO = '/new_design/logo.svg';
 const STAGE = { width: 1080, height: 1920 };
 
@@ -720,74 +721,16 @@ export default function App() {
         {/* 1. SCREENSAVER SCREEN */}
         {screen === 'screensaver' && (
           <section className="saver-content" onClick={() => setScreen('idle')}>
-            {/* Ambient Background & Grid */}
+            {/* Real Background Graphic from Exhibition Kiosk */}
+            <img
+              src={SCREENSAVER_BG}
+              className="saver-background-image"
+              alt="Screensaver Background"
+            />
+
+            {/* Subtle Center Energy Aura & Pulse Rings */}
             <div className="saver-energy-backdrop">
-              {/* Radial center glow */}
               <div className="saver-center-glow" />
-
-              {/* Bokeh circles */}
-              <div className="saver-bokeh bokeh-1" />
-              <div className="saver-bokeh bokeh-2" />
-              <div className="saver-bokeh bokeh-3" />
-              <div className="saver-bokeh bokeh-4" />
-
-              {/* Connected constellation / energy circuit traces */}
-              <svg className="saver-circuit-svg" viewBox="0 0 1080 1920" preserveAspectRatio="none">
-                <defs>
-                  <filter id="circuit-glow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="4" result="blur" />
-                    <feMerge>
-                      <feMergeNode in="blur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                  <linearGradient id="trace-grad-1" x1="0%" y1="100%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#00d2ff" stopOpacity="0.2" />
-                    <stop offset="70%" stopColor="#38bdf8" stopOpacity="0.75" />
-                    <stop offset="100%" stopColor="#60a5fa" stopOpacity="0.95" />
-                  </linearGradient>
-                  <linearGradient id="trace-grad-2" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.7" />
-                    <stop offset="100%" stopColor="#1d4ed8" stopOpacity="0.15" />
-                  </linearGradient>
-                </defs>
-
-                {/* Circuit lines matching the booth screen photo */}
-                <g filter="url(#circuit-glow)">
-                  <line x1="160" y1="1400" x2="280" y2="1280" stroke="url(#trace-grad-1)" strokeWidth="2.5" />
-                  <line x1="280" y1="1280" x2="380" y2="1320" stroke="url(#trace-grad-1)" strokeWidth="2" />
-                  <line x1="280" y1="1280" x2="360" y2="1160" stroke="url(#trace-grad-1)" strokeWidth="2.5" />
-                  <line x1="360" y1="1160" x2="520" y2="1140" stroke="url(#trace-grad-1)" strokeWidth="3" />
-                  <line x1="360" y1="1160" x2="310" y2="1020" stroke="url(#trace-grad-1)" strokeWidth="2" />
-                  <line x1="520" y1="1140" x2="680" y2="1260" stroke="url(#trace-grad-2)" strokeWidth="2" />
-                  <line x1="380" y1="1320" x2="490" y2="1420" stroke="url(#trace-grad-1)" strokeWidth="2" />
-                  <line x1="490" y1="1420" x2="580" y2="1350" stroke="url(#trace-grad-1)" strokeWidth="1.5" />
-                  <line x1="220" y1="1100" x2="360" y2="1160" stroke="url(#trace-grad-1)" strokeWidth="2" />
-                  <line x1="180" y1="1220" x2="280" y2="1280" stroke="url(#trace-grad-1)" strokeWidth="2" />
-                  <line x1="680" y1="1260" x2="780" y2="1200" stroke="url(#trace-grad-2)" strokeWidth="1.5" />
-
-                  {/* Upper subtle branches */}
-                  <line x1="520" y1="1140" x2="540" y2="920" stroke="url(#trace-grad-1)" strokeWidth="1.5" strokeDasharray="4 6" />
-                  <line x1="310" y1="1020" x2="420" y2="880" stroke="url(#trace-grad-1)" strokeWidth="1.5" />
-
-                  {/* Glowing node dots */}
-                  <circle cx="160" cy="1400" r="5" fill="#38bdf8" />
-                  <circle cx="280" cy="1280" r="7" fill="#67e8f9" />
-                  <circle cx="380" cy="1320" r="6" fill="#38bdf8" />
-                  <circle cx="360" cy="1160" r="8" fill="#ffffff" />
-                  <circle cx="520" cy="1140" r="9" fill="#ffffff" />
-                  <circle cx="680" cy="1260" r="6" fill="#38bdf8" />
-                  <circle cx="780" cy="1200" r="5" fill="#0284c7" />
-                  <circle cx="490" cy="1420" r="6" fill="#38bdf8" />
-                  <circle cx="580" cy="1350" r="5" fill="#0284c7" />
-                  <circle cx="310" cy="1020" r="6" fill="#38bdf8" />
-                  <circle cx="220" cy="1100" r="5" fill="#38bdf8" />
-                  <circle cx="180" cy="1220" r="5" fill="#0284c7" />
-                  <circle cx="420" cy="880" r="5" fill="#38bdf8" />
-                </g>
-              </svg>
-
-              {/* Pulsing Sonar Ring around the button */}
               <div className="energy-pulse-ring ring-1" />
               <div className="energy-pulse-ring ring-2" />
             </div>
