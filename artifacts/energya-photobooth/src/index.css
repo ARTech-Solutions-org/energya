@@ -1591,13 +1591,24 @@ h2 {
   background: #020b18;
 }
 
+.fullscreen-booth-view.is-background {
+  pointer-events: none;
+  z-index: 0;
+}
+
+.fullscreen-booth-view.is-active {
+  z-index: 5;
+}
+
 .fullscreen-camera-video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scaleX(-1); /* mirror live preview naturally */
+  transform: scaleX(-1) translateZ(0); /* mirror live preview naturally with GPU hardware acceleration */
+  will-change: transform;
+  backface-visibility: hidden;
   z-index: 1;
 }
 

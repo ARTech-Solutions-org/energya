@@ -1,8 +1,8 @@
 {
   "camera": {
     "deviceId": "",
-    "width": 1080,
-    "height": 1920
+    "width": 1920,
+    "height": 1080
   },
   "countdownSeconds": 3,
   "idleTimeoutSeconds": 45,

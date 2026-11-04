@@ -319,7 +319,7 @@ export default function App() {
     fetchConfig();
   }, [fetchConfig]);
 
-  // Continuous Camera Stream
+  // Continuous Camera Stream with Native 1080p 30fps Landscape negotiation (Logitech C920 hardware accelerated)
   const startCamera = useCallback(async () => {
     try {
       if (!navigator.mediaDevices?.getUserMedia) throw new Error('camera');
@@ -338,12 +338,13 @@ export default function App() {
         return;
       }
 
-      streamRef.current?.getTracks().forEach(track => track.stop());
-
+      // Fast, native webcam resolution (1080p landscape 30fps) - avoids Windows DirectShow 5fps throttle on USB cameras
       const constraints: MediaStreamConstraints = {
         video: {
-          width: { ideal: config.camera?.width ?? 1080 },
-          height: { ideal: config.camera?.height ?? 1920 },
+          width: { ideal: 1920, min: 1280 },
+          height: { ideal: 1080, min: 720 },
+          frameRate: { ideal: 30, min: 24 },
+          facingMode: 'user',
           ...(config.camera?.deviceId ? { deviceId: { exact: config.camera.deviceId } } : {}),
         },
         audio: false,
@@ -354,29 +355,53 @@ export default function App() {
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-        await waitForVideoFrame(videoRef.current);
+        await videoRef.current.play().catch(() => {});
       }
       setCameraReady(true);
       setCameraError('');
     } catch {
-      setCameraReady(false);
-      setCameraError('Camera unavailable');
-    }
-  }, [config]);
-
-  useEffect(() => {
-    if (screen === 'idle' || screen === 'countdown') {
-      startCamera();
-    }
-    return () => {
-      if (screen === 'screensaver' || screen === 'qr' || screen === 'error') {
-        streamRef.current?.getTracks().forEach(track => track.stop());
-        streamRef.current = null;
+      try {
+        // High-speed fallback for older or bandwidth-limited USB ports
+        const fallbackStream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+            frameRate: { ideal: 30 },
+          },
+          audio: false,
+        });
+        streamRef.current = fallbackStream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = fallbackStream;
+          await videoRef.current.play().catch(() => {});
+        }
+        setCameraReady(true);
+        setCameraError('');
+      } catch {
         setCameraReady(false);
+        setCameraError('Camera unavailable');
       }
+    }
+  }, [config.camera?.deviceId]);
+
+  // Keep camera warm and streaming continuously (instant 0ms switch from screensaver)
+  useEffect(() => {
+    startCamera();
+    return () => {
+      streamRef.current?.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
     };
-  }, [screen, startCamera]);
+  }, [startCamera]);
+
+  // Re-verify video element attachment when switching to idle or countdown
+  useEffect(() => {
+    if ((screen === 'idle' || screen === 'countdown') && videoRef.current && streamRef.current) {
+      if (videoRef.current.srcObject !== streamRef.current) {
+        videoRef.current.srcObject = streamRef.current;
+        videoRef.current.play().catch(() => {});
+      }
+    }
+  }, [screen]);
 
   // Idle timeout
   const resetToSaver = useCallback(() => {
@@ -824,76 +849,76 @@ export default function App() {
           </section>
         )}
 
-        {/* 2 & 3. FULLSCREEN CAMERA BOOTH VIEW (IDLE & COUNTDOWN) */}
-        {(screen === 'idle' || screen === 'countdown') && (
-          <div className="fullscreen-booth-view">
-            {/* Live Camera Feed behind frame */}
-            <video
-              ref={videoRef}
-              autoPlay
-              muted
-              playsInline
-              className={`fullscreen-camera-video ${cameraReady ? 'is-ready' : 'is-loading'}`}
-            />
+        {/* 2 & 3. FULLSCREEN CAMERA BOOTH VIEW (ALWAYS WARMED UP IN BACKGROUND) */}
+        <div className={`fullscreen-booth-view ${(screen === 'idle' || screen === 'countdown') ? 'is-active' : 'is-background'}`}>
+          {/* Live Camera Feed behind frame - Always streaming with zero delay */}
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            playsInline
+            className={`fullscreen-camera-video ${cameraReady ? 'is-ready' : 'is-loading'}`}
+          />
 
-            {!cameraReady && (
-              <div className="camera-loading-overlay">
-                <div className="loading-orbit" />
-                <span>{cameraError || 'Starting camera...'}</span>
-              </div>
-            )}
+          {!cameraReady && (screen === 'idle' || screen === 'countdown') && (
+            <div className="camera-loading-overlay">
+              <div className="loading-orbit" />
+              <span>{cameraError || 'Starting camera...'}</span>
+            </div>
+          )}
 
-            {/* Branded 1080x1920 Full-Screen Frame Overlay (Kiosk Screen) */}
+          {/* Branded 1080x1920 Full-Screen Frame Overlay (Kiosk Screen) */}
+          {(screen === 'idle' || screen === 'countdown') && (
             <img
               src={SCREEN_FRAME}
               className="fullscreen-frame-overlay"
               alt="Energya Screen Frame"
             />
+          )}
 
-            {/* Shutter Button with White Camera Icon (Only in Idle mode) */}
-            {screen === 'idle' && (
-              <div className="shutter-button-container">
-                <button
-                  type="button"
-                  className="shutter-camera-btn"
-                  onClick={capture}
-                  title="Take photo"
-                  aria-label="Take photo"
-                >
-                  <img
-                    src="/new_design/camera_white.png"
-                    className="shutter-camera-img"
-                    alt="Take photo"
+          {/* Shutter Button with White Camera Icon (Only in Idle mode) */}
+          {screen === 'idle' && (
+            <div className="shutter-button-container">
+              <button
+                type="button"
+                className="shutter-camera-btn"
+                onClick={capture}
+                title="Take photo"
+                aria-label="Take photo"
+              >
+                <img
+                  src="/new_design/camera_white.png"
+                  className="shutter-camera-img"
+                  alt="Take photo"
+                />
+              </button>
+            </div>
+          )}
+
+          {/* Dynamic Countdown Overlay (Centered with pop number & smile prompt) */}
+          {screen === 'countdown' && countdown !== null && (
+            <div className="fullscreen-countdown-overlay">
+              <div className="countdown-ring-box">
+                <svg viewBox="0 0 200 200" className="countdown-svg">
+                  <circle cx="100" cy="100" r="88" className="ring-bg" />
+                  <circle
+                    className="ring-progress"
+                    cx="100"
+                    cy="100"
+                    r="88"
+                    style={{
+                      strokeDashoffset: `${((config.countdownSeconds - countdown) / config.countdownSeconds) * 553}`,
+                    }}
                   />
-                </button>
+                </svg>
+                <span className="countdown-number" key={countdown}>
+                  {countdown}
+                </span>
               </div>
-            )}
-
-            {/* Dynamic Countdown Overlay (Centered with pop number & smile prompt) */}
-            {screen === 'countdown' && countdown !== null && (
-              <div className="fullscreen-countdown-overlay">
-                <div className="countdown-ring-box">
-                  <svg viewBox="0 0 200 200" className="countdown-svg">
-                    <circle cx="100" cy="100" r="88" className="ring-bg" />
-                    <circle
-                      className="ring-progress"
-                      cx="100"
-                      cy="100"
-                      r="88"
-                      style={{
-                        strokeDashoffset: `${((config.countdownSeconds - countdown) / config.countdownSeconds) * 553}`,
-                      }}
-                    />
-                  </svg>
-                  <span className="countdown-number" key={countdown}>
-                    {countdown}
-                  </span>
-                </div>
-                <div className="countdown-smile-banner">Smile! 😊</div>
-              </div>
-            )}
-          </div>
-        )}
+              <div className="countdown-smile-banner">Smile! 😊</div>
+            </div>
+          )}
+        </div>
 
         {/* 4. FLASH EFFECT */}
         {screen === 'flash' && <div className="flash-screen" aria-label="Camera shutter flash" />}
